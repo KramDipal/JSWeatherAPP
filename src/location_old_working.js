@@ -2,28 +2,24 @@ import { Text, View, ActivityIndicator, SafeAreaView, ScrollView, RefreshControl
 import * as Location from "expo-location";
 import { useEffect, useState } from "react";
 
-import * as Font from 'expo-font';
-
 const OpenWeatherKey = 'f5a2eb40a4c7bf948600af5f7f7d7cd6'; // Replace with your actual API key
 
 export default function Weather() {
     const [refreshing, setRefreshing] = useState(false);
-    // const [currentTemp, setCurrentTemp] = useState(null);
-    // const [currentDescription, setCurrentDescription] = useState(null);
+    const [currentTemp, setCurrentTemp] = useState(null);
+    const [currentDescription, setCurrentDescription] = useState(null);
     const [weatherIcon, setWeatherIcon] = useState(null);
     const [currLat, setCurrLat] = useState(null);
     const [currLon, setCurrLon] = useState(null);
-    // const [feelsLike, setFeelsLike] = useState(null);
-    // const [feelsHourlyLike, setHourlyFeelsLike] = useState(null);
-    // const [currHumidity, setCurrHumidity] = useState(null);
-    // const [hourly, setHourly] = useState(null);
-    // const [hourlyDesc, setHourlyDesc] = useState(null);
-    // const [ timeZone, setTimeZone ] = useState(null);
-
-    const [ weathervalue, setWeatherValue] = useState(null);
+    const [feelsLike, setFeelsLike] = useState(null);
+    const [feelsHourlyLike, setHourlyFeelsLike] = useState(null);
+    const [currHumidity, setCurrHumidity] = useState(null);
+    const [hourly, setHourly] = useState(null);
+    const [hourlyDesc, setHourlyDesc] = useState(null);
+    const [ timeZone, setTimeZone ] = useState(null);
 
     useEffect(() => {
-        loadForecast();
+        // loadForecast();
     }, []);
 
     const loadForecast = async () => {
@@ -50,20 +46,18 @@ export default function Weather() {
             const data = await response.json();
 
             if (response.status === 200) {
-
-                setWeatherValue(data);
                 // Set state variables with the fetched data
-                // setCurrentTemp(data.current.temp);
-                // setCurrentDescription(data.current.weather[0].description);
+                setCurrentTemp(data.current.temp);
+                setCurrentDescription(data.current.weather[0].description);
                 setWeatherIcon(data.current.weather[0].icon);
-                // setCurrHumidity(data.current.humidity);
-                // setFeelsLike(data.current.feels_like);
+                setCurrHumidity(data.current.humidity);
+                setFeelsLike(data.current.feels_like);
                 setCurrLat(data.lat);
                 setCurrLon(data.lon);
-                // setHourly(data.hourly);
-                // setHourlyFeelsLike(data.hourly[0].feels_like);
-                // setHourlyDesc(data.hourly[0].weather[0].description);
-                // setTimeZone(data.timezone);
+                setHourly(data.hourly);
+                setHourlyFeelsLike(data.hourly[0].feels_like);
+                setHourlyDesc(data.hourly[0].weather[0].description);
+                setTimeZone(data.timezone);
 
                 console.log('Fetch data successful');
             } else {
@@ -76,12 +70,6 @@ export default function Weather() {
         }
     };
 
-    // Handle null state
-    if (!weathervalue) {
-        return <Text>Loading...</Text>;
-    }
-    // console.log('weathervalue ' + weathervalue);
-
     const onRefresh = () => {
         setRefreshing(true);
         loadForecast();
@@ -89,10 +77,6 @@ export default function Weather() {
 
     return (
         <SafeAreaView style={styles.container}>
-            {!weathervalue &&            
-                <ActivityIndicator size="large" color="#0000ff" />
-            }
-
             <ScrollView
                 refreshControl={
                     <RefreshControl
@@ -105,31 +89,23 @@ export default function Weather() {
 
                 <Text style={styles.title}>Current Weather</Text>
 
-                <Text style={{ fontFamily:'DeliciousHandrawn-Regular', alignItems: 'center', textAlign: 'center', fontSize: 20, color: 'blue' }}>
+                <Text style={{ alignItems: 'center', textAlign: 'center', fontSize: 15, color: 'blue' }}>
                     Your Location {currLat} {currLon}
                 </Text>
 
-                <Text style={{fontSize:25, fontWeight:'bold', alignItems:'center', textAlign:'center'}}>
-                    {/* {timeZone} */}
-                    {weathervalue.timezone}
+                <Text style={{fontSize:20, fontWeight:'bold', alignItems:'center', textAlign:'center'}}>
+                    {timeZone}
                 </Text>
 
                 <View style={styles.current}>
                     <Image
                         style={styles.largeIcon}
-                        // source={{ uri: `http://openweathermap.org/img/wn/${weatherIcon}@2x.png` }}
                         source={{ uri: `http://openweathermap.org/img/wn/${weatherIcon}@2x.png` }}
                     />
-                    <Text style={styles.currentTemperature}>
-                        {/* {Math.round(currentTemp)}°C */}
-                        {Math.round(weathervalue.current.temp)}°C
-                    </Text>
+                    <Text style={styles.currentTemperature}>{Math.round(currentTemp)}°C</Text>
                 </View>
 
-                <Text style={styles.currentDescriptionStyle}>
-                    {/* {currentDescription} */}
-                    {weathervalue.current.weather[0].description}
-                </Text>
+                <Text style={styles.currentDescriptionStyle}>{currentDescription}</Text>
 
                 <View style={styles.extraInfo}>
                     <View style={styles.info}>
@@ -137,10 +113,7 @@ export default function Weather() {
                             source={require('../assets/temp.png')}
                             style={{ width: 50, height: 50, borderRadius: 40 / 2, marginLeft: 50 }}
                         />
-                        <Text style={styles.textTitle}>
-                            {/* {feelsLike}°C */}
-                            {weathervalue.current.feels_like}°C
-                        </Text>
+                        <Text style={styles.textTitle}>{feelsLike}°C</Text>
                         <Text style={styles.textTitle}>Feels Like</Text>
                     </View>
                     <View style={styles.info}>
@@ -148,10 +121,7 @@ export default function Weather() {
                             source={require('../assets/humidity.png')}
                             style={{ width: 50, height: 50, borderRadius: 40 / 2, marginLeft: 50 }}
                         />
-                        <Text style={styles.textTitle}>
-                            {/* {currHumidity} */}
-                            {weathervalue.current.humidity}
-                        </Text>
+                        <Text style={styles.textTitle}>{currHumidity}</Text>
                         <Text style={styles.textTitle}>Humidity</Text>
                     </View>
                 </View>
@@ -162,8 +132,7 @@ export default function Weather() {
 
                 <FlatList
                     horizontal={true}
-                    // data={hourly}
-                    data={weathervalue.hourly}
+                    data={hourly}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({ item }) => {
                         const weather = item.weather[0];
@@ -200,9 +169,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#ECDBBA',
     },
     title: {
-        fontFamily:'BebasNeue-Regular',
         textAlign: 'center',
-        fontSize: 30,
+        fontSize: 36,
         fontWeight: 'bold',
         color: '#C84B31',
     },
@@ -226,10 +194,8 @@ const styles = StyleSheet.create({
         marginLeft: 50,
     },
     currentDescriptionStyle: {
-        fontFamily:'DeliciousHandrawn-Regular',
-        color:'green',
         fontWeight: '200',
-        fontSize: 28,
+        fontSize: 24,
         marginTop: 20,
         alignSelf: 'center',
         marginBottom: 10,
@@ -253,7 +219,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     subtitle: {
-        fontSize: 15,
+        fontSize: 20,
         marginVertical: 10,
         marginLeft: 7,
         color: '#C84b31',
